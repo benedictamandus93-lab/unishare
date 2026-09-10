@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-board text-ink font-sans antialiased;
+    background-image: radial-gradient(
+      rgba(22, 33, 28, 0.055) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
+    background-position: 0 0;
+  }
+
+  :focus-visible {
+    outline: 2px solid #0a3d62;
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+    letter-spacing: -0.022em;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply text-ink;
+  }
+}
+
+@layer components {
+  /* A sheet is a piece of paper on the board. */
+  .sheet {
+    @apply bg-card rounded-sheet border border-board-line shadow-pin;
+  }
+
+  .field {
+    @apply w-full rounded-sheet border border-board-line bg-white px-3 py-2.5 text-[15px]
+           placeholder:text-ink-faint focus:border-varsity focus:outline-none;
+  }
+
+  .label {
+    @apply mb-1.5 block text-[13px] font-semibold text-ink-soft;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-sheet bg-varsity px-5 py-2.5
+           text-[15px] font-semibold text-white transition-colors hover:bg-varsity-deep
+           disabled:cursor-not-allowed disabled:opacity-55;
+  }
+
+  .btn-quiet {
+    @apply inline-flex items-center justify-center gap-2 rounded-sheet border border-board-line
+           bg-white px-4 py-2 text-[14px] font-semibold text-ink transition-colors
+           hover:border-ink-faint disabled:cursor-not-allowed disabled:opacity-55;
+  }
+
+  .tag {
+    @apply inline-block rounded-[2px] px-2 py-[3px] text-[10.5px] font-bold uppercase tracking-[0.14em];
+  }
+
+  .notice {
+    @apply rounded-sheet border border-services-ink/25 bg-services-wash px-3.5 py-2.5 text-[14px] text-services-ink;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
