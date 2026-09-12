@@ -3,7 +3,13 @@ import {
   CATEGORIES,
   SUBCATEGORIES,
 } from "./constants";
-import type { Category, Listing, PriceUnit, Subcategory } from "./types";
+import type {
+  Category,
+  Direction,
+  Listing,
+  PriceUnit,
+  Subcategory,
+} from "./types";
 
 /** Client side guard. The database enforces the same rule on the server. */
 export function isUniversityEmail(email: string): boolean {
@@ -23,6 +29,29 @@ export function isValidEmail(email: string): boolean {
 /** Keeps digits only, so that wa.me and sms: links stay well formed. */
 export function normalisePhone(input: string): string {
   return input.replace(/[^\d]/g, "");
+}
+
+/**
+ * On a wanted listing the figure is what the student is willing to pay, so it
+ * is presented as a budget rather than as an asking price.
+ */
+export function formatListingPrice(
+  price: number,
+  unit: PriceUnit,
+  direction: Direction,
+): string {
+  const amount = Number.isInteger(price) ? `$${price}` : `$${price.toFixed(2)}`;
+  if (direction === "wanted") {
+    switch (unit) {
+      case "hour":
+        return `Budget ${amount} / hour`;
+      case "day":
+        return `Budget ${amount} / day`;
+      default:
+        return `Budget up to ${amount}`;
+    }
+  }
+  return formatPrice(price, unit);
 }
 
 export function formatPrice(price: number, unit: PriceUnit): string {
@@ -54,6 +83,7 @@ export function searchIndex(listing: Listing): string {
   return [
     listing.title,
     listing.description,
+    listing.direction === "wanted" ? "wanted looking for" : "offering",
     categoryLabel(listing.category),
     subcategoryLabel(listing.subcategory),
     listing.poster_name,

@@ -23,6 +23,12 @@ const SECTIONS = [
     blurb: "Tutoring, graduation photos, repairs and a hand when you move.",
     accent: "bg-services-ink",
   },
+  {
+    href: "/wanted",
+    label: "Wanted",
+    blurb: "What students are looking for. You might already have it.",
+    accent: "bg-varsity",
+  },
 ];
 
 export default async function HomePage() {
@@ -50,7 +56,7 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2.5 lg:grid-cols-1">
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-1">
           {SECTIONS.map((section) => (
             <Link
               key={section.href}

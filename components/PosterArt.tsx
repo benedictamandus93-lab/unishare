@@ -153,18 +153,28 @@ const WASH: Record<Category, string> = {
   services: "bg-services-wash text-services-ink",
 };
 
+const LOOKING_FOR = (
+  <>
+    <circle cx="36" cy="38" r="20" />
+    <path d="M51 53l18 18" />
+    <path d="M28 38h16M36 30v16" />
+  </>
+);
+
 export function PosterArt({
   title,
   category,
   subcategory,
   imageUrl,
   tall = false,
+  wanted = false,
 }: {
   title: string;
   category: Category;
   subcategory: string | null;
   imageUrl: string | null;
   tall?: boolean;
+  wanted?: boolean;
 }) {
   const ratio = tall ? "aspect-[16/9]" : "aspect-[16/10]";
 
@@ -187,7 +197,11 @@ export function PosterArt({
     <div
       className={`${ratio} ${WASH[category]} flex w-full items-center justify-center overflow-hidden`}
       role="img"
-      aria-label={`Drawing representing ${title}`}
+      aria-label={
+        wanted
+          ? `Drawing indicating a student is looking for ${title}`
+          : `Drawing representing ${title}`
+      }
     >
       <svg
         viewBox="0 0 84 88"
@@ -199,7 +213,7 @@ export function PosterArt({
         strokeLinejoin="round"
         aria-hidden="true"
       >
-        {pickMotif(title, subcategory)}
+        {wanted ? LOOKING_FOR : pickMotif(title, subcategory)}
       </svg>
     </div>
   );

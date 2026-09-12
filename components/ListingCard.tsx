@@ -1,11 +1,17 @@
 import Link from "next/link";
-import { CATEGORY_STYLE } from "@/lib/constants";
+import { CATEGORY_STYLE, DIRECTION_STYLE } from "@/lib/constants";
 import type { Listing } from "@/lib/types";
-import { formatPrice, subcategoryLabel, timeAgo } from "@/lib/utils";
+import {
+  formatListingPrice,
+  subcategoryLabel,
+  timeAgo,
+} from "@/lib/utils";
 import { PosterArt } from "./PosterArt";
 
 export function ListingCard({ listing }: { listing: Listing }) {
   const style = CATEGORY_STYLE[listing.category];
+  const dir = DIRECTION_STYLE[listing.direction];
+  const wanted = listing.direction === "wanted";
 
   return (
     <article className="group relative">
@@ -16,19 +22,23 @@ export function ListingCard({ listing }: { listing: Listing }) {
       />
       <Link
         href={`/listing/${listing.id}`}
-        className="sheet flex h-full flex-col overflow-hidden transition-shadow duration-200 hover:shadow-lift"
+        className={`sheet flex h-full flex-col overflow-hidden transition-shadow duration-200 hover:shadow-lift ${dir.sheet}`}
       >
         <PosterArt
           title={listing.title}
           category={listing.category}
           subcategory={listing.subcategory}
           imageUrl={listing.image_url}
+          wanted={wanted}
         />
         <span aria-hidden="true" className={`h-[3px] w-full ${style.rule}`} />
 
         <div className="flex flex-1 flex-col gap-2.5 p-4">
           <div className="flex items-start justify-between gap-3">
-            <span className={`tag ${style.tag}`}>{style.label}</span>
+            <span className="flex flex-wrap gap-1.5">
+              {wanted && <span className={`tag ${dir.tag}`}>Wanted</span>}
+              <span className={`tag ${style.tag}`}>{style.label}</span>
+            </span>
             <span className="text-[12px] text-ink-faint">
               {timeAgo(listing.created_at)}
             </span>
@@ -39,7 +49,11 @@ export function ListingCard({ listing }: { listing: Listing }) {
           </h3>
 
           <p className="text-[17px] font-semibold text-varsity">
-            {formatPrice(listing.price, listing.price_unit)}
+            {formatListingPrice(
+              listing.price,
+              listing.price_unit,
+              listing.direction,
+            )}
           </p>
 
           <p className="line-clamp-2 text-[14px] leading-relaxed text-ink-soft">
@@ -48,7 +62,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
 
           <div className="mt-auto flex items-center justify-between gap-3 border-t border-dashed border-board-line pt-3">
             <span className="text-[13px] text-ink-soft">
-              Posted by {listing.poster_name}
+              {wanted ? "Wanted by" : "Posted by"} {listing.poster_name}
               {listing.subcategory ? ` · ${subcategoryLabel(listing.subcategory)}` : ""}
             </span>
             <span className="text-[13px] font-semibold text-varsity underline-offset-4 group-hover:underline">

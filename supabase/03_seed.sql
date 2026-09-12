@@ -7,7 +7,7 @@
 --  no logged in student can edit or delete them.
 -- ============================================================================
 
-delete from public.listings where user_id is null;
+delete from public.listings where user_id is null and direction = 'offering';
 
 insert into public.listings
   (user_id, poster_name, category, subcategory, title, description,

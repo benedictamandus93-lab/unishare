@@ -21,6 +21,7 @@ export function Footer() {
             <Link href="/buy" className="block text-ink-soft hover:text-ink">Buy</Link>
             <Link href="/rent" className="block text-ink-soft hover:text-ink">Rent</Link>
             <Link href="/services" className="block text-ink-soft hover:text-ink">Services</Link>
+            <Link href="/wanted" className="block text-ink-soft hover:text-ink">Wanted</Link>
           </div>
           <div className="space-y-2">
             <p className="font-semibold">Account</p>

@@ -3,10 +3,14 @@ import { notFound } from "next/navigation";
 import { ContactButtons } from "@/components/ContactButtons";
 import { DeleteListingButton } from "@/components/DeleteListingButton";
 import { PosterArt } from "@/components/PosterArt";
-import { CATEGORY_STYLE } from "@/lib/constants";
+import { CATEGORY_STYLE, DIRECTION_STYLE } from "@/lib/constants";
 import { getListingById } from "@/lib/listings";
 import { createClient } from "@/lib/supabase/server";
-import { formatPrice, subcategoryLabel, timeAgo } from "@/lib/utils";
+import {
+  formatListingPrice,
+  subcategoryLabel,
+  timeAgo,
+} from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +30,9 @@ export default async function ListingPage({
   const isOwner = Boolean(user && listing.user_id && user.id === listing.user_id);
 
   const style = CATEGORY_STYLE[listing.category];
-  const backHref = `/${listing.category}`;
+  const dir = DIRECTION_STYLE[listing.direction];
+  const wanted = listing.direction === "wanted";
+  const backHref = wanted ? "/wanted" : `/${listing.category}`;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -34,22 +40,24 @@ export default async function ListingPage({
         href={backHref}
         className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-varsity underline underline-offset-4"
       >
-        Back to {style.label.toLowerCase()}
+        Back to the wall
       </Link>
 
-      <article className="sheet overflow-hidden">
+      <article className={`sheet overflow-hidden ${dir.sheet}`}>
         <PosterArt
           title={listing.title}
           category={listing.category}
           subcategory={listing.subcategory}
           imageUrl={listing.image_url}
           tall
+          wanted={wanted}
         />
         <span aria-hidden="true" className={`block h-[4px] w-full ${style.rule}`} />
 
         <div className="space-y-6 p-5 sm:p-7">
           <header className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
+              {wanted && <span className={`tag ${dir.tag}`}>Wanted</span>}
               <span className={`tag ${style.tag}`}>{style.label}</span>
               {listing.subcategory && (
                 <span className="tag bg-board-deep text-ink-soft">
@@ -66,7 +74,11 @@ export default async function ListingPage({
             </h1>
 
             <p className="text-[26px] font-bold text-varsity">
-              {formatPrice(listing.price, listing.price_unit)}
+              {formatListingPrice(
+                listing.price,
+                listing.price_unit,
+                listing.direction,
+              )}
             </p>
           </header>
 
@@ -76,10 +88,12 @@ export default async function ListingPage({
 
           <div className="border-t border-dashed border-board-line pt-5">
             <p className="text-[15px] font-semibold">
-              Posted by {listing.poster_name}
+              {wanted ? "Wanted by" : "Posted by"} {listing.poster_name}
             </p>
             <p className="mt-1 text-[14px] text-ink-soft">
-              Contact {listing.poster_name} directly to arrange the details.
+              {wanted
+                ? `If you have one of these, contact ${listing.poster_name} directly.`
+                : `Contact ${listing.poster_name} directly to arrange the details.`}
             </p>
             <div className="mt-4">
               <ContactButtons listing={listing} />

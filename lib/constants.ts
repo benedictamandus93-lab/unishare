@@ -1,4 +1,4 @@
-import type { Category, PriceUnit, Subcategory } from "./types";
+import type { Category, Direction, PriceUnit, Subcategory } from "./types";
 
 export const SITE_NAME = "UniShare";
 
@@ -6,6 +6,31 @@ export const ALLOWED_EMAIL_DOMAINS = ["auckland.ac.nz", "aucklanduni.ac.nz"];
 
 export const EMAIL_DOMAIN_MESSAGE =
   "Please use a University of Auckland email address ending in @auckland.ac.nz or @aucklanduni.ac.nz.";
+
+/**
+ * Direction and category are two separate questions. Direction asks who holds
+ * the item; category asks how it changes hands. Keeping them apart avoids a
+ * combined list such as "wanted to rent", which would grow unmanageably.
+ */
+export const DIRECTIONS: {
+  value: Direction;
+  label: string;
+  blurb: string;
+  verb: string;
+}[] = [
+  {
+    value: "offering",
+    label: "Offering",
+    blurb: "Things students have",
+    verb: "is offering",
+  },
+  {
+    value: "wanted",
+    label: "Wanted",
+    blurb: "Things students are looking for",
+    verb: "is looking for",
+  },
+];
 
 export const CATEGORIES: { value: Category; label: string; blurb: string }[] = [
   { value: "buy", label: "Buy", blurb: "Things students are selling" },
@@ -52,6 +77,23 @@ export const CATEGORY_STYLE: Record<
     rule: "bg-services-ink",
     dot: "bg-services-ink",
     label: "Services",
+  },
+};
+
+export const DIRECTION_STYLE: Record<
+  Direction,
+  { tag: string; sheet: string; pin: string }
+> = {
+  offering: {
+    tag: "bg-board-deep text-ink-soft",
+    sheet: "",
+    pin: "ring-board",
+  },
+  wanted: {
+    // A wanted note reads as a different kind of paper on the same board.
+    tag: "bg-varsity text-white",
+    sheet: "border-dashed border-varsity/45 bg-[#F7FAFC]",
+    pin: "ring-board",
   },
 };
 

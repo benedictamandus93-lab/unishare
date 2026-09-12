@@ -4,12 +4,19 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   CATEGORIES,
+  DIRECTIONS,
   MAX_IMAGE_BYTES,
   PRICE_UNITS,
   STORAGE_BUCKET,
   SUBCATEGORIES,
 } from "@/lib/constants";
-import type { Category, Listing, PriceUnit, Subcategory } from "@/lib/types";
+import type {
+  Category,
+  Direction,
+  Listing,
+  PriceUnit,
+  Subcategory,
+} from "@/lib/types";
 import { friendlyError, isValidEmail, normalisePhone } from "@/lib/utils";
 import { useAuth } from "./AuthProvider";
 
@@ -18,6 +25,9 @@ export function PostListingForm({ existing }: { existing?: Listing }) {
   const router = useRouter();
   const editing = Boolean(existing);
 
+  const [direction, setDirection] = useState<Direction>(
+    existing?.direction ?? "offering",
+  );
   const [category, setCategory] = useState<Category>(existing?.category ?? "buy");
   const [subcategory, setSubcategory] = useState<Subcategory>(
     existing?.subcategory ?? "photography",
@@ -102,7 +112,11 @@ export function PostListingForm({ existing }: { existing?: Listing }) {
     }
     const priceNumber = Number(price);
     if (!price.trim() || Number.isNaN(priceNumber) || priceNumber < 0) {
-      setError("Please enter a price as a number, for example 40.");
+      setError(
+        direction === "wanted"
+          ? "Please enter your budget as a number, for example 40."
+          : "Please enter a price as a number, for example 40.",
+      );
       return;
     }
     if (!useEmail && !useWhatsapp && !useSms) {
@@ -131,6 +145,7 @@ export function PostListingForm({ existing }: { existing?: Listing }) {
       const payload = {
         user_id: user.id,
         poster_name: displayName,
+        direction,
         category,
         subcategory: category === "services" ? subcategory : null,
         title: title.trim(),
@@ -177,7 +192,46 @@ export function PostListingForm({ existing }: { existing?: Listing }) {
 
       <fieldset className="sheet space-y-4 p-5">
         <legend className="px-1 font-display text-[17px] font-semibold">
-          What are you posting?
+          Are you offering something, or looking for something?
+        </legend>
+
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          {DIRECTIONS.map((option) => {
+            const active = direction === option.value;
+            return (
+              <label
+                key={option.value}
+                className={`cursor-pointer rounded-sheet border px-4 py-3 transition-colors ${
+                  active
+                    ? "border-varsity bg-varsity/5"
+                    : "border-board-line hover:border-ink-faint"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="direction"
+                  value={option.value}
+                  checked={active}
+                  onChange={() => setDirection(option.value)}
+                  className="sr-only"
+                />
+                <span className="block text-[15px] font-semibold">
+                  {option.label}
+                </span>
+                <span className="block text-[13px] text-ink-soft">
+                  {option.blurb}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
+
+      <fieldset className="sheet space-y-4 p-5">
+        <legend className="px-1 font-display text-[17px] font-semibold">
+          {direction === "wanted"
+            ? "What kind of thing are you after?"
+            : "What are you posting?"}
         </legend>
 
         <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
@@ -249,14 +303,18 @@ export function PostListingForm({ existing }: { existing?: Listing }) {
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             maxLength={90}
-            placeholder="Graduation photographer"
+            placeholder={
+              direction === "wanted"
+                ? "Looking for a second-hand desk lamp"
+                : "Graduation photographer"
+            }
           />
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="price" className="label">
-              Price in NZD
+              {direction === "wanted" ? "Your budget in NZD" : "Price in NZD"}
             </label>
             <input
               id="price"
@@ -269,7 +327,9 @@ export function PostListingForm({ existing }: { existing?: Listing }) {
           </div>
           <div>
             <label htmlFor="priceUnit" className="label">
-              How the price works
+              {direction === "wanted"
+                ? "How your budget applies"
+                : "How the price works"}
             </label>
             <select
               id="priceUnit"
@@ -298,7 +358,11 @@ export function PostListingForm({ existing }: { existing?: Listing }) {
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             maxLength={900}
-            placeholder="Graduation photography for individuals and small groups. I bring my own lighting and send edited photos within three days."
+            placeholder={
+              direction === "wanted"
+                ? "I need a desk lamp for my flat this semester. Happy to collect from anywhere near the city campus, and I can pay cash on pickup."
+                : "Graduation photography for individuals and small groups. I bring my own lighting and send edited photos within three days."
+            }
           />
         </div>
 
@@ -320,7 +384,9 @@ export function PostListingForm({ existing }: { existing?: Listing }) {
             </div>
           )}
           <p className="mt-1.5 text-[13px] text-ink-faint">
-            Images up to 5 MB. Without a photo, UniShare draws a poster for you.
+            {direction === "wanted"
+              ? "Optional. A photo of something similar helps others recognise what you need."
+              : "Images up to 5 MB. Without a photo, UniShare draws a poster for you."}
           </p>
         </div>
       </fieldset>
@@ -389,7 +455,9 @@ export function PostListingForm({ existing }: { existing?: Listing }) {
             ? "Saving"
             : editing
               ? "Save changes"
-              : "Pin to the wall"}
+              : direction === "wanted"
+                ? "Pin my wanted note"
+                : "Pin to the wall"}
         </button>
         <button
           type="button"

@@ -1,3 +1,6 @@
+/** Which side of the wall a listing sits on. */
+export type Direction = "offering" | "wanted";
+
 export type Category = "buy" | "rent" | "services";
 
 export type Subcategory =
@@ -16,6 +19,7 @@ export interface Listing {
   id: string;
   user_id: string | null;
   poster_name: string;
+  direction: Direction;
   category: Category;
   subcategory: Subcategory | null;
   title: string;
@@ -38,6 +42,7 @@ export interface Profile {
 }
 
 export interface ListingDraft {
+  direction: Direction;
   category: Category;
   subcategory: Subcategory | null;
   title: string;
