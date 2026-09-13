@@ -97,6 +97,15 @@ export const DIRECTION_STYLE: Record<
   },
 };
 
+/** Safe lookups. A value the database did not expect falls back rather than crashing a page. */
+export function categoryStyle(category: Category) {
+  return CATEGORY_STYLE[category] ?? CATEGORY_STYLE.buy;
+}
+
+export function directionStyle(direction: Direction) {
+  return DIRECTION_STYLE[direction] ?? DIRECTION_STYLE.offering;
+}
+
 export const STORAGE_BUCKET = "listing-images";
 
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;

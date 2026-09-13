@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DeleteListingButton } from "@/components/DeleteListingButton";
 import { EmptyState } from "@/components/EmptyState";
-import { CATEGORY_STYLE } from "@/lib/constants";
+import { categoryStyle } from "@/lib/constants";
 import { getMyListings } from "@/lib/listings";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice, timeAgo } from "@/lib/utils";
@@ -50,7 +50,7 @@ export default async function MyListingsPage() {
       ) : (
         <ul className="space-y-3">
           {listings.map((listing) => {
-            const style = CATEGORY_STYLE[listing.category];
+            const style = categoryStyle(listing.category);
             return (
               <li key={listing.id} className="sheet p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">

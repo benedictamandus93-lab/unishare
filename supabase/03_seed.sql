@@ -7,7 +7,8 @@
 --  no logged in student can edit or delete them.
 -- ============================================================================
 
-delete from public.listings where user_id is null and direction = 'offering';
+-- Removes only the sample rows, never a student's own listing.
+delete from public.listings where user_id is null;
 
 insert into public.listings
   (user_id, poster_name, category, subcategory, title, description,

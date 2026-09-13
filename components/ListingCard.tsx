@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CATEGORY_STYLE, DIRECTION_STYLE } from "@/lib/constants";
+import { categoryStyle, directionStyle } from "@/lib/constants";
 import type { Listing } from "@/lib/types";
 import {
   formatListingPrice,
@@ -9,8 +9,8 @@ import {
 import { PosterArt } from "./PosterArt";
 
 export function ListingCard({ listing }: { listing: Listing }) {
-  const style = CATEGORY_STYLE[listing.category];
-  const dir = DIRECTION_STYLE[listing.direction];
+  const style = categoryStyle(listing.category);
+  const dir = directionStyle(listing.direction);
   const wanted = listing.direction === "wanted";
 
   return (

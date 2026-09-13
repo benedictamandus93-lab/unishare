@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ContactButtons } from "@/components/ContactButtons";
 import { DeleteListingButton } from "@/components/DeleteListingButton";
 import { PosterArt } from "@/components/PosterArt";
-import { CATEGORY_STYLE, DIRECTION_STYLE } from "@/lib/constants";
+import { categoryStyle, directionStyle } from "@/lib/constants";
 import { getListingById } from "@/lib/listings";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -29,8 +29,8 @@ export default async function ListingPage({
   } = await supabase.auth.getUser();
   const isOwner = Boolean(user && listing.user_id && user.id === listing.user_id);
 
-  const style = CATEGORY_STYLE[listing.category];
-  const dir = DIRECTION_STYLE[listing.direction];
+  const style = categoryStyle(listing.category);
+  const dir = directionStyle(listing.direction);
   const wanted = listing.direction === "wanted";
   const backHref = wanted ? "/wanted" : `/${listing.category}`;
 

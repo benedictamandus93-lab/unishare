@@ -132,6 +132,8 @@ export function timeAgo(iso: string): string {
 /** Turns a Supabase error into wording a student can act on. */
 export function friendlyError(message: string | undefined): string {
   const text = (message ?? "").toLowerCase();
+  // Messages the application wrote itself are already suitable for a student.
+  if (text.includes("wanted listings are not switched on")) return message!;
   if (text.includes("invalid login credentials")) {
     return "Email or password is incorrect.";
   }

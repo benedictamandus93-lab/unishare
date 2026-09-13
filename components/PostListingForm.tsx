@@ -158,20 +158,52 @@ export function PostListingForm({ existing }: { existing?: Listing }) {
         sms_contact: useSms ? normalisePhone(smsValue) : null,
       };
 
+      // If the optional "wanted" migration has not been run, the direction
+      // column does not exist. Retrying without it keeps posting working
+      // instead of failing with an error the student cannot act on.
+      const withoutDirection = (() => {
+        const { direction: _omit, ...rest } = payload;
+        return rest;
+      })();
+      const missingDirectionColumn = (message: string) =>
+        message.toLowerCase().includes("direction");
+
       if (editing && existing) {
-        const { error: updateError } = await supabase
+        const stamped = { updated_at: new Date().toISOString() };
+        let { error: updateError } = await supabase
           .from("listings")
-          .update({ ...payload, updated_at: new Date().toISOString() })
+          .update({ ...payload, ...stamped })
           .eq("id", existing.id);
+
+        if (updateError && missingDirectionColumn(updateError.message)) {
+          ({ error: updateError } = await supabase
+            .from("listings")
+            .update({ ...withoutDirection, ...stamped })
+            .eq("id", existing.id));
+        }
         if (updateError) throw new Error(updateError.message);
         router.push(`/listing/${existing.id}`);
       } else {
-        const { data, error: insertError } = await supabase
+        let { data, error: insertError } = await supabase
           .from("listings")
           .insert(payload)
           .select("id")
           .single();
+
+        if (insertError && missingDirectionColumn(insertError.message)) {
+          if (direction === "wanted") {
+            throw new Error(
+              "Wanted listings are not switched on for this site yet. Please post this as an offering, or ask the team to run the Wanted update.",
+            );
+          }
+          ({ data, error: insertError } = await supabase
+            .from("listings")
+            .insert(withoutDirection)
+            .select("id")
+            .single());
+        }
         if (insertError) throw new Error(insertError.message);
+        if (!data) throw new Error("No listing was returned after saving.");
         router.push(`/listing/${data.id}`);
       }
       router.refresh();
